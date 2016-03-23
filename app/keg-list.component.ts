@@ -18,6 +18,8 @@ import { EditKegDetailsComponent} from './edit-keg-details.component';
     [class.selected]="currentKeg === selectedKeg"
     [keg]="currentKeg">
   </keg-display>
+  <edit-keg-details *ngIf="selectedKeg" [keg]="selectedKeg">
+  </edit-keg-details>
   `
 })
 
