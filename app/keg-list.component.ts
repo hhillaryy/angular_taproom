@@ -4,20 +4,28 @@ import { Keg } from './keg.model';
 import { EditKegDetailsComponent} from './edit-keg-details.component';
 import { NewKegComponent } from './new-keg.component';
 import {PintsRemainingPipe} from './pintsRemaining.pipe';
-
+import {KegABVPipe} from './kegABV.pipe';
 @Component({
   selector: 'keg-list',
   inputs: ['kegList'],
   outputs: ['onKegSelect'],
   directives: [KegComponent, EditKegDetailsComponent, NewKegComponent],
-  pipes: [PintsRemainingPipe],
+  pipes: [PintsRemainingPipe, KegABVPipe],
   template: `
-  <select (change)="onChange($event.target.value)">
+  <h3>Keg Level</h3>
+  <select (change)="onChangePints($event.target.value)">
     <option value="all" selected="selected">Show All</option>
     <option value="empty">Near Empty (<10 pints)</option>
     <option value="full">Mostly full (>10 pints)</option>
   </select>
-  <keg-display *ngFor="#currentKeg of kegList | pintsRemaining:filterKeg"
+  <h3>ABV</h3>
+  <select (change)="onChangeABV($event.target.value)">
+    <option value="all" selected="selected">Show All</option>
+    <option value="high">High ABV > 7%</option>
+    <option value="low">Low ABV < 7%</option>
+  </select>
+  <keg-display *ngFor="#currentKeg of kegList | pintsRemaining:filterKegPints
+  | kegABV:filterKegABV"
   [class.cheap]="currentKeg.price <= 5"
   [class.expensive]="currentKeg.price >= 5"
   [class.highABV]="currentKeg.abv > 5"
@@ -38,7 +46,8 @@ export class KegListComponent {
   public kegList: Keg[];
   public onKegSelect: EventEmitter<Keg>;
   public selectedKeg: Keg
-  public filterKeg: string = "all";
+  public filterKegPints: string = "all";
+  public filterKegABV: string = "all";
   constructor() {
     this.onKegSelect = new EventEmitter();
   }
@@ -52,8 +61,12 @@ export class KegListComponent {
       new Keg(newKegInformation[0], newKegInformation[1], parseInt(newKegInformation[2]), parseInt(newKegInformation[3]), this.kegList.length)
     );
   }
-  onChange(filterOption) {
-  this.filterKeg = filterOption;
-  console.log(this.filterKeg);
+  onChangePints(filterOption: string) {
+  this.filterKegPints = filterOption;
+  console.log(this.filterKegPints);
+  }
+  onChangeABV(filterOption: string) {
+  this.filterKegABV = filterOption;
+  console.log(this.filterKegABV);
   }
 }
